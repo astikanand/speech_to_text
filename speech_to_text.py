@@ -10,6 +10,7 @@
 # =======================================
 
 import speech_recognition as sr
+from pathlib import Path
 from utils.constants import logger
 from utils.speech_to_text_utils import(
     set_microphone,
@@ -38,6 +39,11 @@ def speech_to_text():
     recognizer = sr.Recognizer()
     microphone = set_microphone(recognizer)
     file_name = get_filename(recognizer, microphone)
+    try:
+        home = str(Path.home())
+        file_name = home + "/Desktop/" + file_name
+    except:
+        pass
     language = set_language(recognizer, microphone)
 
     print("\n\nSpeak out the content now:")
