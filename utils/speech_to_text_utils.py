@@ -12,7 +12,7 @@
 import speech_recognition as sr
 from .extras import is_number
 from .config import languages, noise_adjust_duration, normal_phrase_time_limit, timeout
-from .constants import logger
+from .constants import logger, recognizer
 
 
 def set_microphone(recognizer):
@@ -22,10 +22,11 @@ def set_microphone(recognizer):
     Steps:
       • Sets the default microphone for current voice conversation.
       • Gets the list of available microphones currently on the system and displays it.
-      • Asks user for the microphone choice they want to use.
-      • Adjusts for the noise cancellation and starts listening.
-      • Validates if microphone number entered is correct.
+      • Asks user for the Microphone choice they want to use.
+      • Gets the microphone_number after listening.
+      • Validates if microphone_number entered is correct.
       • After all validations, sets the microphone chosen.
+      • If fails to set Microphone, asks user to set it again
       • Returns the microphone object.
     """
 
@@ -37,20 +38,14 @@ def set_microphone(recognizer):
     available_microphones = sr.Microphone.list_microphone_names()
     number_of_microphones = len(available_microphones)
 
-    print("There are " + str(number_of_microphones) + " microphones available for your system currently.")
+    print("There are " + str(number_of_microphones) + " Microphones available for your system currently.")
     for mic_number in range(number_of_microphones):
         print(str(mic_number+1) + ". " + available_microphones[mic_number])
 
     microphone_status = False
     while(microphone_status is False):
-        print("\nSay which microphone you want to use (say number ex: 1,2,3) ?: ")
-        with microphone as source:
-            print("Listening for the microphone choice...")
-            recognizer.adjust_for_ambient_noise(source, duration=noise_adjust_duration)
-            audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=normal_phrase_time_limit)
-            print("Listening for the microphone choice over. Thanks!")
-
-        microphone_number = recognizer.recognize_google(audio, language="en-IN")
+        print("\n\nSay which Microphone you want to use (say number ex: 1,2,3) ?: ")
+        microphone_number = listen_from_microphone(microphone, "Microphone choice", normal_phrase_time_limit)
 
         if(not is_number(microphone_number)):
             print("You didn't enter a number.\n Try again...")
@@ -73,24 +68,20 @@ def get_filename(recognizer, microphone):
     Gets the file name from user to save the converted text content.
 
     Steps:
-      • Asks the user to say the name of the file where they want to save text.
-      • Adjusts for the noise cancellation and starts listening.
-      • Adds the ".txt" type to the file name.
+      • Asks the user to say the file_name where they want to save text.
+      • Gets the file_name after listening.
+      • Adds the ".txt" type to the file_name.
       • Returns the file_name.
     """
 
-    logger.info("Getting the file name")
+    logger.info("Getting the file name.")
     logger.debug("get_filename Input: {}".format((recognizer, microphone)))
 
     file_name = "created_text"
-    print("\nSay the file name where you want to save the text: ")
-    with microphone as source:
-        print("Listening for the file name...")
-        recognizer.adjust_for_ambient_noise(source, duration=noise_adjust_duration)
-        audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=normal_phrase_time_limit)
-        print("Listening for the file name over. Thanks!")
 
-    file_name = recognizer.recognize_google(audio, language="en-IN")
+    print("\n\nSay the file name where you want to save the converted text: ")
+    file_name = listen_from_microphone(microphone, "file_name choice", normal_phrase_time_limit)
+
     file_name += ".txt"
     print("Your chosen file name is: " + file_name)
     
@@ -104,8 +95,8 @@ def set_language(recognizer, microphone):
     Sets the language in which user want to speak and convert to text.
 
     Steps:
-      • Asks user in which language the want to speak.
-      • Adjusts for the noise cancellation and starts listening
+      • Asks user in which Language the want to speak.
+      • Gets the lang name after listening.
       • Checks if language chosen is available in list of languages.
       • If available, gets the "l10n" code of that language from languages dict.
       • Else asks user to chose the language again.
@@ -113,20 +104,15 @@ def set_language(recognizer, microphone):
 
     """
 
-    logger.info("Setting the language for text conversion")
+    logger.info("Setting the language for text conversion.")
     logger.debug("set_language Input: {}".format((recognizer, microphone)))
 
     language_status = False
     language = "english"
     while(language_status is False):
-        print("\nSay which language you want to speak in (English, Hindi, Gujarati, Spanish etc.) ?: ")
-        with microphone as source:
-            print("Listening for the language choice...")
-            recognizer.adjust_for_ambient_noise(source, duration=noise_adjust_duration)
-            audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=normal_phrase_time_limit)
-            print("Listening for the language choice over. Thanks!")
-
-        lang = recognizer.recognize_google(audio, language="en-IN")
+        print("\n\nSay which language you want to speak in (English, Hindi, Gujarati, Spanish etc.) ?: ")
+        
+        lang = listen_from_microphone(microphone, "Language choice", normal_phrase_time_limit)
         language = lang.lower()
         
         if language in languages:
@@ -140,3 +126,37 @@ def set_language(recognizer, microphone):
 
     logger.debug("set_language Output: {}".format(lang_l10n))
     return lang_l10n
+
+
+def listen_from_microphone(microphone, message_text, phrase_time_limit):
+    """
+    Listens from the microphone returns the converted text.
+
+    Steps:
+      • Adjusts for the noise cancellation and starts listening.
+      • Listen from the Microphone source.
+      • Converts the listened audio to text.
+      • If fails to listen or convert, times out to re-listen.
+      • Returns the converted_text.
+    """
+
+    logger.info("Listening from the microphone.")
+    logger.debug("listen_from_microphone Input: {}".format((microphone, message_text, phrase_time_limit)))
+
+    recognizer = sr.Recognizer()
+
+    with microphone as source:
+        listened = False
+        while(not listened):
+            try:
+                print("Listening for the " + message_text + "...")
+                recognizer.adjust_for_ambient_noise(source, duration=noise_adjust_duration)
+                audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
+                converted_text = recognizer.recognize_google(audio, language="en-IN")
+                listened = True
+            except:
+                print("Listening for the " + message_text + " <<<< TIMED OUT >>>>. Trying again...")
+        print("Listening for the " + message_text + " over. Thanks!")
+    
+    logger.debug("listen_from_microphone Output: {}".format(converted_text))
+    return converted_text

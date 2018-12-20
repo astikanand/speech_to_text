@@ -9,12 +9,12 @@
 # Python Version: 3.7
 # =======================================
 
-import speech_recognition as sr
-from utils.constants import logger
+from utils.constants import logger, recognizer
 from utils.speech_to_text_utils import(
     set_microphone,
     get_filename,
-    set_language
+    set_language,
+    listen_from_microphone
 )
 from utils.config import noise_adjust_duration, content_phrase_time_limit, timeout
 
@@ -25,31 +25,25 @@ def speech_to_text():
 
     Steps:
       • Gets a speech recognizer object.
-      • Sets the microphone from available list of microphones.
-      • Gets the file name wherer the converted text is to be saved.
-      • Sets the knowledge for the speech.
-      • Adjusts for the noise cancellation and starts listening.
-      • Converts the text and save to the given file
+      • Sets the Microphone from available list of microphones.
+      • Gets the file_name where the converted text is to be saved.
+      • Sets the Language for the speech.
+      • Gets the text_content after listening.
+      • Saves the text_content to the given file_name.
     """
 
-    logger.info("Into speech to text conversion")
+    logger.info("Into speech to text conversion.")
 
-    recognizer = sr.Recognizer()
     microphone = set_microphone(recognizer)
     file_name = get_filename(recognizer, microphone)
     language = set_language(recognizer, microphone)
 
-    with microphone as source:
-        print("\nListening for the content...")
-        recognizer.adjust_for_ambient_noise(source, duration=noise_adjust_duration)
-        audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=content_phrase_time_limit)
-        print("Listening to content over. Thanks!")
-
-    text_content = recognizer.recognize_google(audio, language=language)
+    text_content = listen_from_microphone(microphone, "Content", content_phrase_time_limit)
 
     with open(file_name,'w+') as file:
         file.write(text_content)
     
+    print("Your spoken content: \n" + text_content)
     print("Your file " + file_name + " is created with the spoken text content.")
     
 
