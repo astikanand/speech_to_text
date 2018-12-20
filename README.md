@@ -19,7 +19,7 @@ Converts different language spoken text to speech and writes to a text file.
 
 **Other Indian Languages:**
 
-- Assamese, Bengali, Gujarati, Kannada, Maithili, Malyalam
+- Assamese, Bengali, Gujarati, Kannada, Malyalam
 - Marathi, Oriya, Punjabi, Tamil, Telugu, Urdu
     
 **Other Foreign Languages:**

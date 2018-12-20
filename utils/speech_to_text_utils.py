@@ -12,7 +12,7 @@
 import speech_recognition as sr
 from .extras import is_number
 from .config import languages, noise_adjust_duration, normal_phrase_time_limit, timeout
-from .constants import logger, recognizer
+from .constants import logger
 
 
 def set_microphone(recognizer):
@@ -45,15 +45,15 @@ def set_microphone(recognizer):
     microphone_status = False
     while(microphone_status is False):
         print("\n\nSay which Microphone you want to use (say number ex: 1,2,3) ?: ")
-        microphone_number = listen_from_microphone(microphone, "Microphone choice", normal_phrase_time_limit)
+        microphone_number = listen_from_microphone(recognizer, microphone, "en-IN", normal_phrase_time_limit, "Microphone choice")
 
         if(not is_number(microphone_number)):
-            print("You didn't enter a number.\n Try again...")
+            print("You didn't enter a number.\nTry again...")
         else:
             microphone_number = int(microphone_number)
             if(microphone_number > number_of_microphones):
                 print("Only " + str(number_of_microphones) + " microphones are available.")
-                print("And you are trying to use " + str(microphone_number) + "th microphone.\n Try again...")
+                print("And you are trying to use " + str(microphone_number) + "th microphone.\nTry again...")
             else:
                 print("You chose to go with microphone: " + str(microphone_number))
                 microphone = sr.Microphone(device_index=microphone_number-1)
@@ -80,7 +80,7 @@ def get_filename(recognizer, microphone):
     file_name = "created_text"
 
     print("\n\nSay the file name where you want to save the converted text: ")
-    file_name = listen_from_microphone(microphone, "file_name choice", normal_phrase_time_limit)
+    file_name = listen_from_microphone(recognizer, microphone, "en-IN", normal_phrase_time_limit, "file_name choice")
 
     file_name += ".txt"
     print("Your chosen file name is: " + file_name)
@@ -112,7 +112,7 @@ def set_language(recognizer, microphone):
     while(language_status is False):
         print("\n\nSay which language you want to speak in (English, Hindi, Gujarati, Spanish etc.) ?: ")
         
-        lang = listen_from_microphone(microphone, "Language choice", normal_phrase_time_limit)
+        lang = listen_from_microphone(recognizer, microphone, "en-IN", normal_phrase_time_limit, "Language choice")
         language = lang.lower()
         
         if language in languages:
@@ -128,7 +128,7 @@ def set_language(recognizer, microphone):
     return lang_l10n
 
 
-def listen_from_microphone(microphone, message_text, phrase_time_limit):
+def listen_from_microphone(recognizer, microphone, language, phrase_time_limit, message_text):
     """
     Listens from the microphone returns the converted text.
 
@@ -141,9 +141,7 @@ def listen_from_microphone(microphone, message_text, phrase_time_limit):
     """
 
     logger.info("Listening from the microphone.")
-    logger.debug("listen_from_microphone Input: {}".format((microphone, message_text, phrase_time_limit)))
-
-    recognizer = sr.Recognizer()
+    logger.debug("listen_from_microphone Input: {}".format((recognizer, microphone, language, phrase_time_limit, message_text)))
 
     with microphone as source:
         listened = False
@@ -152,7 +150,7 @@ def listen_from_microphone(microphone, message_text, phrase_time_limit):
                 print("Listening for the " + message_text + "...")
                 recognizer.adjust_for_ambient_noise(source, duration=noise_adjust_duration)
                 audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
-                converted_text = recognizer.recognize_google(audio, language="en-IN")
+                converted_text = recognizer.recognize_google(audio, language=language)
                 listened = True
             except:
                 print("Listening for the " + message_text + " <<<< TIMED OUT >>>>. Trying again...")

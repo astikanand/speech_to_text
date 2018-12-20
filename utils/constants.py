@@ -10,7 +10,6 @@
 # ================================================
 
 import logging
-import speech_recognition as sr
 
 ##
 # Setting the logger for the entire text_to_speech app by mainly 2 steps
@@ -32,7 +31,3 @@ console_log_handler.setFormatter(log_formatter)
 logger = logging.getLogger('text_to_speech_logger')
 logger.addHandler(console_log_handler)
 logger.setLevel(logging.CRITICAL)
-
-
-# Sets the recognizer
-recognizer = sr.Recognizer()

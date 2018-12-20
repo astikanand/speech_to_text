@@ -21,8 +21,7 @@ languages = {
     "gujarati": "gu-IN",
     "hindi": "hi-IN",
     "kannada": "ka",
-    "maithili": "mai",
-    "malyalam": "ml",
+    "malayalam": "ml",
     "marathi": "mr",
     "oriya": "or",
     "punjabi": "pa-IN",
@@ -49,6 +48,6 @@ languages = {
 }
 
 noise_adjust_duration = 0.5
-timeout = 4
-normal_phrase_time_limit = 7
-content_phrase_time_limit = 20
+timeout = 2
+normal_phrase_time_limit = 4
+content_phrase_time_limit = 30
