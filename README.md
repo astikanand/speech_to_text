@@ -45,16 +45,51 @@ Converts different language spoken text to speech and writes to a text file.
 
 **SpeechRecognition**
 
-    pip3 install SpeechRecognition
+    $ pip3 install SpeechRecognition
 
 **PyAudio**
 
     # Debian Linux
-    sudo apt-get install python3-pyaudio
+    $ sudo apt-get install python3-pyaudio
 
     # MacOs
-    brew install portaudio
-    pip3 install pyaudio
+    $ brew install portaudio
+    $ pip3 install pyaudio
 
     # Windows
-    pip3 install pyaudio
+    $ pip3 install pyaudio
+
+
+--------
+
+## Run Instructions
+
+You can change the configurations in **utils/config.py**.
+
+    # Noise adjust time: Time to adjust with surrounding noise for noise cancellation
+    # Should be < 1, Ideal to keep it 0.5
+    noise_adjust_duration = 0.5 
+
+    # timeout: Time it will wait for you to start speaking, will time out after that
+    timeout = 3
+
+    # normal_phrase_time_limit: Time to speak normal phrases like (file_name, language etc.)
+    normal_phrase_time_limit = 6
+
+    # content_phrase_time_limit: Time to speak your entire content, recommended to increase in actual use
+    content_phrase_time_limit = 20
+
+
+**Running the project:**
+
+    $ cd your/project/location/speech_to_text
+    $ python3 speech_to_text.py
+
+
+---------
+
+## Working Screenshots
+
+**Terminal:**
+
+**Output:**
