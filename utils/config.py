@@ -48,6 +48,6 @@ languages = {
 }
 
 noise_adjust_duration = 0.5
-timeout = 2
-normal_phrase_time_limit = 4
-content_phrase_time_limit = 30
+timeout = 3
+normal_phrase_time_limit = 6
+content_phrase_time_limit = 20
