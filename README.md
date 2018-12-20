@@ -91,5 +91,7 @@ You can change the configurations in **utils/config.py**.
 ## Working Screenshots
 
 **Terminal:**
+![speech_to_text_terminal](https://user-images.githubusercontent.com/8958028/50296460-8be79800-04a0-11e9-935c-95024ce36c60.png)
 
 **Output:**
+![text_to_speech_output](https://user-images.githubusercontent.com/8958028/50296585-d2d58d80-04a0-11e9-8a68-2e35a785b062.png)
