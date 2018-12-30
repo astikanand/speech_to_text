@@ -5,9 +5,9 @@ Converts different language spoken text to speech and writes to a text file.
 
 - Asks user to select a microphone from list of available microphones which they want to use.
 - Asks the file name where they want to save the text output.
-- Asks for the language choice in which they want to speak.
-- Asks for the content for the conversion
-- Converts the spoken content into text and writes into the file specified earlier
+- Asks the language choice in which they want to speak.
+- Asks the content to be converted.
+- Converts the spoken content into text and writes into the file specified earlier.
 
 ---------
 
